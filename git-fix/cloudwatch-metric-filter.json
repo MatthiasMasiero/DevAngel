@@ -1,0 +1,13 @@
+{
+  "filterName": "ErrorLogFilter",
+  "filterPattern": "ERROR",
+  "logGroupName": "/quietops/website",
+  "metricTransformations": [
+    {
+      "metricName": "ErrorCount",
+      "metricNamespace": "QuietOps/Website",
+      "metricValue": "1",
+      "defaultValue": 0
+    }
+  ]
+}

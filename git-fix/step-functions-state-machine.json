@@ -1,0 +1,29 @@
+{
+  "Comment": "QuietOps Incident Response State Machine",
+  "StartAt": "ProcessErrorLogs",
+  "States": {
+    "ProcessErrorLogs": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "error-investigator-function",
+        "Payload.$": "$"
+      },
+      "Next": "CreateGitHubIssue"
+    },
+    "CreateGitHubIssue": {
+      "Type": "Task", 
+      "Resource": "arn:aws:states:::http:invoke",
+      "Parameters": {
+        "ApiEndpoint": "https://api.github.com/repos/MatthiasMasiero/DevAngel/dispatches",
+        "Method": "POST",
+        "Headers": {
+          "Authorization": "token YOUR_GITHUB_TOKEN",
+          "Accept": "application/vnd.github.v3+json"
+        },
+        "RequestBody.$": "$.Payload"
+      },
+      "End": true
+    }
+  }
+}
