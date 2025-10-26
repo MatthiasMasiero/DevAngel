@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error Dashboard</title>
+</head>
+<body>
+    <h1>Error Monitoring Dashboard</h1>
+    
+    <div class="error-card">
+        <h2 id="error-type">Loading...</h2>
+        <p>Count: <span id="error-count">-</span></p>
+        <p>Files: <span id="affected-files">-</span></p>
+        <button onclick="loadErrorData()">Refresh</button>
+    </div>
+
+    <script src="frontend-api-client.js"></script>
+</body>
+</html>

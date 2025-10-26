@@ -1,0 +1,54 @@
+name: Auto Fix Error Spike
+
+on:
+  repository_dispatch:
+    types: [auto_fix_request]
+
+jobs:
+  create-fix-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or Update Issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const errorData = context.payload.client_payload.error_summary;
+            
+            const issueBody = `
+            ## 🚨 Automated Error Detection
+            
+            **Error Type:** ${errorData.error_type}
+            **Error Count:** ${errorData.error_count}
+            **Affected Files:** ${errorData.affected_files.join(', ')}
+            
+            **Sample Logs:**
+            \`\`\`
+            ${errorData.sample_logs.join('\n')}
+            \`\`\`
+            
+            /q plan
+            `;
+            
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['auto-fix'],
+              state: 'open'
+            });
+            
+            if (issues.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: issueBody
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Auto-Fix: ${errorData.error_type}`,
+                body: issueBody,
+                labels: ['auto-fix', 'bug']
+              });
+            }

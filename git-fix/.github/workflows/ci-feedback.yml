@@ -1,0 +1,34 @@
+name: CI Feedback Loop
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  test-and-feedback:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Run Tests
+        id: tests
+        run: |
+          echo "Running tests..."
+          # Add your actual test commands here
+          # npm test || echo "tests_failed=true" >> $GITHUB_OUTPUT
+          echo "tests_failed=false" >> $GITHUB_OUTPUT
+      
+      - name: Request Q Review on Failure
+        if: steps.tests.outputs.tests_failed == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const labels = context.payload.pull_request.labels.map(l => l.name);
+            if (labels.includes('auto-fix')) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: '/q review'
+              });
+            }

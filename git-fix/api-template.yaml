@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  ErrorApiLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: error-api-function
+      Runtime: python3.9
+      Handler: index.lambda_handler
+      Code:
+        ZipFile: |
+          # Paste the lambda function code here
+      Role: !GetAtt LambdaRole.Arn
+
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: S3ReadAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: 'arn:aws:s3:::your-error-bucket/*'
+
+  ErrorApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: error-retrieval-api
+
+  ErrorResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref ErrorApi
+      ParentId: !GetAtt ErrorApi.RootResourceId
+      PathPart: errors
+
+  ErrorMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ErrorApi
+      ResourceId: !Ref ErrorResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ErrorApiLambda.Arn}/invocations'
+
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref ErrorApiLambda
+      Principal: apigateway.amazonaws.com

@@ -1,0 +1,14 @@
+{
+  "AlarmName": "ErrorSpikeAlarm",
+  "AlarmDescription": "Triggers when ERROR logs spike in nginx error log",
+  "MetricName": "ErrorCount",
+  "Namespace": "CWLogs",
+  "Statistic": "Sum",
+  "Period": 300,
+  "EvaluationPeriods": 1,
+  "Threshold": 5,
+  "ComparisonOperator": "GreaterThanThreshold",
+  "AlarmActions": [
+    "arn:aws:sns:us-east-1:478047815638:error-notifications"
+  ]
+}
