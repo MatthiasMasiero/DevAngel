@@ -1,55 +1,5 @@
-# import json, os, urllib.request, urllib.error
-
-# OWNER = os.getenv("GITHUB_OWNER")
-# REPO  = os.getenv("GITHUB_REPO")
-# GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-# Q_LABEL = "Amazon Q development agent"
-
-# def gh_post(url, payload, timeout=15):
-#     data = json.dumps(payload).encode("utf-8")
-#     req = urllib.request.Request(
-#         url, data=data, method="POST",
-#         headers={
-#             "Authorization": f"Bearer {GITHUB_TOKEN}",
-#             "Accept": "application/vnd.github+json",
-#             "Content-Type": "application/json"
-#         }
-#     )
-#     with urllib.request.urlopen(req, timeout=timeout) as resp:
-#         return resp.getcode(), json.loads(resp.read().decode("utf-8"))
-
-# def lambda_handler(event, context):
-#     incident_time = event.get("incident_time", "unknown")
-#     likely_files = event.get("likely_files", [])
-#     error_json = event.get("error_json", {})
-
-#     body = (
-#         "[QuietOps] Automated incident\n\n"
-#         f"Time: {incident_time}\n"
-#         f"Likely files: {likely_files}\n\n"
-#         "Cleaned errors:\n```json\n"
-#         f"{json.dumps(error_json, indent=2)}\n"
-#         "```\n\nPlease create a minimal fix and open a Draft PR against `main`."
-#     )
-
-#     # ensure label exists (idempotent)
-#     try:
-#         gh_post(f"https://api.github.com/repos/{OWNER}/{REPO}/labels",
-#                 {"name": Q_LABEL, "color": "1f883d"}, timeout=10)
-#     except Exception:
-#         pass  # label may already exist
-
-#     # create issue (triggers Q)
-#     status, issue = gh_post(
-#         f"https://api.github.com/repos/{OWNER}/{REPO}/issues",
-#         {"title": "[QuietOps] Fix errors after deploy", "body": body, "labels": [Q_LABEL]},
-#         timeout=15
-#     )
-#     if status >= 300:
-#         raise Exception(f"GitHub issue create failed: {status} {issue}")
-#     return {"issue_url": issue["html_url"], "issue_number": issue["number"]}
-
 import json, os, urllib.request, urllib.error
+from datetime import datetime
 
 OWNER = os.getenv("GITHUB_OWNER")
 REPO  = os.getenv("GITHUB_REPO")
@@ -92,17 +42,34 @@ def lambda_handler(event, context):
     if code != 200:
         raise Exception(f"Token unusable: HTTP {code} {me}")
 
-    incident_time = event.get("incident_time", "unknown")
-    likely_files = event.get("likely_files", [])
-    error_json = event.get("error_json", {})
+    # Parse the nested incident_input structure
+    incident_input = event.get("incident_input", {})
+    
+    # Extract incident time from the first alarm or use current time
+    alarms = incident_input.get("alarms", [])
+    if alarms and "StateChangeTime" in alarms[0]:
+        incident_time = alarms[0]["StateChangeTime"]
+    else:
+        incident_time = datetime.utcnow().isoformat() + "Z"
+    
+    # Extract likely files from deploy information
+    deploy_info = incident_input.get("deploy", {})
+    likely_files = deploy_info.get("changed_files", [])
+    
+    # Build error summary from alarms and logs
+    error_summary = {
+        "alarms": alarms,
+        "logs": incident_input.get("logs", []),
+        "deploy": deploy_info
+    }
 
     body = (
         "[QuietOps] Automated incident\n\n"
         f"Time: {incident_time}\n"
         f"Likely files: {likely_files}\n\n"
         "Cleaned errors:\n```json\n"
-        f"{json.dumps(error_json, indent=2)}\n"
-        "```\n\nPlease create a minimal fix and open a Draft PR against `main`."
+        f"{json.dumps(error_summary, indent=2)}\n"
+        "```\n\nParse the user's code and identify where the errors in the codebase are based on the errors that are provided. If the errors are unrelated to the repository at all, do not submit a PR. If they are related, figure out how to properly update the code thoroughly and open a Draft PR against `main`."
     )
 
     # ensure label exists (ignore if already there)
