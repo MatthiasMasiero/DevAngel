@@ -5,83 +5,67 @@ from datetime import datetime
 s3 = boto3.client('s3')
 sns = boto3.client('sns')
 BUCKET_NAME = 'devangel-incident-data-1761448500'
-
-# SNS Topic ARN
 SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:478047815638:DevAngelAlerts'
 
 def lambda_handler(event, context):
-    """
-    Enhanced updater with completion email notification
-    """
-    
-    source_output = event.get('source_adapter_output', {})
-    analyzer_output = event.get('error_analyzer_output', {})
-    summarizer_output = event.get('error_summarizer_output', {})
-    
+    # Create incident ID with exact timestamp format
     incident_id = f"incident-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
     
+    # Get summarizer output
+    detailed_analysis = event.get('detailed_analysis', '')
+    error_summaries = event.get('error_summaries', [])
+    timeline_analysis = event.get('timeline_analysis', {})
+    recommendations = event.get('recommendations', [])
+    
+    # Create enhanced incident data
     enhanced_data = {
         'incident_id': incident_id,
         'timestamp': datetime.now().isoformat(),
-        'status': determine_severity(analyzer_output),
         'update_type': 'enhanced',
-        'summary': {
-            'total_errors': analyzer_output.get('basic_stats', {}).get('total_errors', 0),
-            'deploy_sha': analyzer_output.get('basic_stats', {}).get('deploy_sha'),
-            'deploy_message': analyzer_output.get('basic_stats', {}).get('deploy_message'),
-            'affected_files': analyzer_output.get('basic_stats', {}).get('affected_files', 0)
-        },
-        'timeline': {
-            'error_series': source_output.get('series', []),
-            'deploy_correlation': summarizer_output.get('timeline_analysis', {})
-        },
-        'charts': {
-            'error_timeline': source_output.get('series', []),
-            'file_impact': source_output.get('file_hits', {}),
-            'top_errors': analyzer_output.get('dashboard_ready', {}).get('top_errors', [])[:5]
-        },
         'analysis': {
-            'status': 'Complete',
-            'executive_summary': summarizer_output.get('detailed_analysis', ''),
-            'recommendations': summarizer_output.get('recommendations', [])
-        }
+            'detailed_analysis': detailed_analysis,
+            'error_summaries': error_summaries,
+            'timeline_analysis': timeline_analysis,
+            'recommendations': recommendations
+        },
+        'status': 'complete'
     }
     
     # Store enhanced data in S3
-    s3.put_object(
-        Bucket=BUCKET_NAME,
-        Key=f'incidents/{incident_id}-enhanced.json',
-        Body=json.dumps(enhanced_data),
-        ContentType='application/json',
-        Metadata={'update-type': 'enhanced', 'incident-id': incident_id}
-    )
-    
-    s3.put_object(
-        Bucket=BUCKET_NAME,
-        Key='latest-incident.json',
-        Body=json.dumps(enhanced_data),
-        ContentType='application/json'
-    )
+    try:
+        s3.put_object(
+            Bucket=BUCKET_NAME,
+            Key=f'incidents/{incident_id}-enhanced.json',
+            Body=json.dumps(enhanced_data),
+            ContentType='application/json'
+        )
+        
+        # Also store as latest
+        s3.put_object(
+            Bucket=BUCKET_NAME,
+            Key='latest-incident.json',
+            Body=json.dumps(enhanced_data),
+            ContentType='application/json'
+        )
+        
+        stored = True
+    except:
+        stored = False
     
     # Send completion email with AI analysis
-    email_result = send_completion_email(enhanced_data, summarizer_output)
+    email_result = send_completion_email(incident_id, detailed_analysis, recommendations)
     
+    # Return exact format from working version
     return {
         'incident_id': incident_id,
         'update_type': 'enhanced',
-        'stored': True,
+        'stored': stored,
         'email_sent': email_result
     }
 
-def send_completion_email(enhanced_data, summarizer_output):
+def send_completion_email(incident_id, detailed_analysis, recommendations):
     """Send completion email with full AI analysis"""
     
-    incident_id = enhanced_data['incident_id']
-    recommendations = summarizer_output.get('recommendations', [])
-    timeline_analysis = summarizer_output.get('timeline_analysis', {})
-    executive_summary = summarizer_output.get('detailed_analysis', '')
-    
-    # Create email subject
     subject = f"DevAngel Analysis Complete - {incident_id}"
     
     # Format recommendations
@@ -91,38 +75,17 @@ def send_completion_email(enhanced_data, summarizer_output):
         rec_text += f"   Reason: {rec.get('reason', 'Analysis complete')}\n"
         rec_text += f"   Timeline: {rec.get('timeline', 'Immediate')}\n\n"
     
-    # Format timeline correlation
-    correlation_text = ""
-    if timeline_analysis.get('deploy_impact'):
-        correlation_text = f"""
-DEPLOYMENT CORRELATION:
-- Deploy SHA: {timeline_analysis.get('deploy_timestamp', 'unknown')}
-- Error Spike: {timeline_analysis.get('error_spike_timestamp', 'unknown')}
-- Time After Deploy: {timeline_analysis.get('minutes_after_deploy', 'unknown')} minutes
-- Correlation Level: {timeline_analysis.get('correlation', 'unknown').upper()}
-- Confidence: {timeline_analysis.get('deploy_impact', False)}
-"""
-    
     # Create complete email message
     message = f"""DevAngel AI Analysis Complete
 
 INCIDENT: {incident_id}
 STATUS: Analysis completed successfully
 
-{correlation_text}
-
-AI EXECUTIVE SUMMARY:
-{executive_summary}
+AI ANALYSIS:
+{detailed_analysis[:500]}...
 
 RECOMMENDED ACTIONS:
 {rec_text if rec_text else "No specific recommendations at this time."}
-
-NEXT STEPS:
-1. Review the full analysis on your dashboard
-2. Consider the recommended actions based on priority
-3. Monitor system for additional incidents
-
-Dashboard URL: https://your-amplify-dashboard-url.com
 
 This analysis was generated by DevAngel AI using AWS Bedrock.
 """
@@ -144,16 +107,3 @@ This analysis was generated by DevAngel AI using AWS Bedrock.
             'status': 'failed',
             'error': str(e)
         }
-
-def determine_severity(analyzer_output):
-    """Determine incident severity"""
-    total_errors = analyzer_output.get('basic_stats', {}).get('total_errors', 0)
-    
-    if total_errors >= 10:
-        return 'critical'
-    elif total_errors >= 5:
-        return 'high'
-    elif total_errors >= 1:
-        return 'medium'
-    else:
-        return 'low'

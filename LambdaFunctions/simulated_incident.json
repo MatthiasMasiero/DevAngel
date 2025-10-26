@@ -1,0 +1,92 @@
+{
+  "source": "cloudwatch",
+  "incident_input": {
+    "logs": [
+      {
+        "@timestamp": "2025-10-26T14:00:15.123Z",
+        "@message": "[ERROR] Database connection timeout after 5000ms",
+        "level": "ERROR",
+        "service": "user-service"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:16.456Z",
+        "@message": "Traceback (most recent call last):\n  File \"/app/src/handlers/user_handler.py\", line 67, in get_user\n    user = db.query('SELECT * FROM users WHERE id = ?', user_id)\n  File \"/app/src/database/connection.py\", line 34, in query\n    cursor = self.connection.cursor()\npsycopg2.OperationalError: connection to server at \"db.internal\" (10.0.1.50), port 5432 failed: timeout expired",
+        "level": "ERROR",
+        "service": "user-service"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:18.789Z",
+        "@message": "[ERROR] API Gateway timeout: /api/users/{id} - Request took 30.2s",
+        "level": "ERROR",
+        "service": "api-gateway"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:22.345Z",
+        "@message": "java.lang.OutOfMemoryError: Java heap space\n\tat com.app.service.UserService.processUsers(UserService.java:145)\n\tat com.app.controller.UserController.getUsers(UserController.java:89)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:566)",
+        "level": "FATAL",
+        "service": "user-service"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:25.678Z",
+        "@message": "[ERROR] Redis connection failed: ECONNREFUSED 127.0.0.1:6379",
+        "level": "ERROR",
+        "service": "cache-service"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:28.234Z",
+        "@message": "ERROR: Unhandled promise rejection\n    at /app/src/services/notification-service.js:123:45\n    at /app/src/controllers/notification-controller.js:67:12\n    at /app/node_modules/express/lib/router/route.js:144:13\nTypeError: Cannot read property 'email' of undefined",
+        "level": "ERROR",
+        "service": "notification-service"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:32.890Z",
+        "@message": "Exception in thread \"pool-5-thread-23\" java.sql.SQLTimeoutException: Query timeout\n\tat com.mysql.cj.jdbc.StatementImpl.executeQuery(StatementImpl.java:1222)\n\tat com.app.repository.UserRepository.findActiveUsers(UserRepository.java:78)\n\tat com.app.service.UserService.getActiveUsers(UserService.java:156)",
+        "level": "ERROR",
+        "service": "user-service"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:35.123Z",
+        "@message": "[ERROR] Elasticsearch cluster unreachable: Connection refused",
+        "level": "ERROR",
+        "service": "search-service"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:38.456Z",
+        "@message": "[CRITICAL] Circuit breaker OPEN for user-database after 10 consecutive failures",
+        "level": "FATAL",
+        "service": "user-service"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:42.789Z",
+        "@message": "RuntimeError: Memory allocation failed\n    at /app/src/processors/data-processor.py:234\n    at /app/src/workers/background-worker.py:89\n    at /app/src/queue/task-runner.py:45\nMemoryError: Unable to allocate 2.1 GiB for an array with shape (268435456,) and data type float64",
+        "level": "FATAL",
+        "service": "data-processor"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:45.345Z",
+        "@message": "[ERROR] Load balancer health check failed: HTTP 503 Service Unavailable",
+        "level": "ERROR",
+        "service": "load-balancer"
+      },
+      {
+        "@timestamp": "2025-10-26T14:00:48.678Z",
+        "@message": "[ERROR] Kafka consumer lag exceeded threshold: 50000 messages behind",
+        "level": "ERROR",
+        "service": "event-processor"
+      }
+    ],
+    "deploy": {
+      "sha": "f7e8d9c2",
+      "message": "Optimize database queries and increase connection pool size",
+      "timestamp": "2025-10-26T13:55:00Z",
+      "changed_files": [
+        "src/database/connection.py",
+        "src/handlers/user_handler.py",
+        "config/database.yml",
+        "src/services/user-service.js",
+        "com/app/service/UserService.java",
+        "src/repository/UserRepository.java"
+      ]
+    }
+  }
+}

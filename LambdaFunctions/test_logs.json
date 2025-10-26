@@ -1,0 +1,35 @@
+{
+  "logs": [
+    {
+      "@timestamp": "2025-10-26T14:00:15.123Z",
+      "@message": "[ERROR] Database timeout in user_handler.py line 45",
+      "level": "ERROR"
+    },
+    {
+      "@timestamp": "2025-10-26T14:00:18.456Z",
+      "@message": "[ERROR] Connection failed in database.py line 67",
+      "level": "ERROR"
+    },
+    {
+      "@timestamp": "2025-10-26T14:00:22.789Z",
+      "@message": "[ERROR] Payment processing error in payment_service.py",
+      "level": "ERROR"
+    },
+    {
+      "@timestamp": "2025-10-26T14:00:25.123Z",
+      "@message": "[ERROR] API timeout in api_gateway.py line 123",
+      "level": "ERROR"
+    },
+    {
+      "@timestamp": "2025-10-26T14:00:28.456Z",
+      "@message": "[ERROR] Memory error in data_processor.py",
+      "level": "ERROR"
+    }
+  ],
+  "deploy": {
+    "sha": "abc123",
+    "message": "Database optimization update",
+    "timestamp": "2025-10-26T13:55:00Z",
+    "changed_files": ["user_handler.py", "database.py", "payment_service.py"]
+  }
+}

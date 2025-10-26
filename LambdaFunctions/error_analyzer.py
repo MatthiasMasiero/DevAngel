@@ -1,13 +1,15 @@
 import json
 
 def lambda_handler(event, context):
-    series = event.get('series', [])
-    exemplars = event.get('exemplars', [])
-    file_hits = event.get('file_hits', {})
-    deploy = event.get('deploy', {})
+    # Get source adapter output
+    source_output = event.get('source_adapter_output', {})
+    series = source_output.get('series', [])
+    exemplars = source_output.get('exemplars', [])
+    file_hits = source_output.get('file_hits', {})
+    deploy = source_output.get('deploy', {})
     
-    return {
-        'status': 'success',
+    # Add error analyzer output to event
+    event['error_analyzer_output'] = {
         'basic_stats': {
             'total_errors': sum(point[1] for point in series) if series else 0,
             'total_error_points': len(series),
@@ -23,3 +25,5 @@ def lambda_handler(event, context):
             'deployment_info': deploy
         }
     }
+    
+    return event
