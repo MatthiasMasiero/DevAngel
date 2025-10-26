@@ -1,0 +1,339 @@
+/* ===== Global Layout ===== */
+.dashboard {
+  font-family: 'Amazon Ember', Arial, sans-serif;
+  background: #f9fafb;
+  min-height: 100vh;
+  color: #1f2937;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Header ===== */
+.dashboard-header {
+  background: #ff9900;
+  color: #1f2937;
+  padding: 1.25rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.status {
+  color: #10b981;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.refresh-btn {
+  background: #232f3e;
+  color: #ffffff;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.refresh-btn:hover {
+  background: #1a252f;
+}
+
+/* ===== Grid Layout ===== */
+.dashboard-grid {
+  display: grid;
+  grid-template-areas:
+    "chart health analysis"
+    "timeline metrics analysis";
+  grid-template-columns: 1.3fr 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  gap: 2rem;
+  padding: 2rem 4rem;
+  flex-grow: 1;
+  align-items: start;
+}
+
+/* ===== Chart Section (NO SCROLL) ===== */
+.chart-section {
+  grid-area: chart;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+  overflow: hidden;
+}
+
+.chart-section h2 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* ===== Scrollable Cards ===== */
+.service-health,
+.real-time-metrics,
+.incident-timeline,
+.analysis-summary {
+  max-height: 350px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #6b7280 transparent;
+}
+
+.service-health::-webkit-scrollbar,
+.real-time-metrics::-webkit-scrollbar,
+.incident-timeline::-webkit-scrollbar,
+.analysis-summary::-webkit-scrollbar {
+  width: 8px;
+}
+
+.service-health::-webkit-scrollbar-thumb,
+.real-time-metrics::-webkit-scrollbar-thumb,
+.incident-timeline::-webkit-scrollbar-thumb,
+.analysis-summary::-webkit-scrollbar-thumb {
+  background-color: #6b7280;
+  border-radius: 4px;
+}
+
+.service-health::-webkit-scrollbar-thumb:hover,
+.real-time-metrics::-webkit-scrollbar-thumb:hover,
+.incident-timeline::-webkit-scrollbar-thumb:hover,
+.analysis-summary::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+/* ===== Table: File Impact ===== */
+.service-health {
+  grid-area: health;
+}
+
+.service-health table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.service-health th,
+.service-health td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.service-health tr:hover {
+  background-color: #f3f4f6;
+}
+
+/* ===== Top Errors ===== */
+.incident-timeline {
+  grid-area: timeline;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.incident-timeline ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ===== Deployment Info ===== */
+.real-time-metrics {
+  grid-area: metrics;
+}
+
+.real-time-metrics ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* ===== Summary ===== */
+.analysis-summary {
+  grid-area: analysis;
+}
+
+.analysis-summary h2 {
+  margin-bottom: 0.5rem;
+}
+
+.analysis-summary p {
+  line-height: 1.6;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+/* ===== Card Design ===== */
+.card {
+  background: #ffffff;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== Footer ===== */
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1rem 3rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+  z-index: 10;
+}
+
+footer a {
+  color: #007bff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+footer button {
+  background: #b91c1c;
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+footer button:hover {
+  background: #7f1d1d;
+  box-shadow: 0 6px 14px rgba(127, 29, 29, 0.6);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-areas:
+      "chart analysis"
+      "health analysis"
+      "timeline metrics";
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-areas:
+      "chart"
+      "health"
+      "timeline"
+      "metrics"
+      "analysis";
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+}
+
+/* ===== Light Mode ===== */
+.dashboard.light {
+  background: #f9fafb;
+  color: #1f2937;
+}
+
+/* ===== Dark Mode ===== */
+.dashboard.dark {
+  background-color: #0d1117;
+  color: #f9fafb;
+}
+
+.dashboard.dark .card {
+  background-color: #161b22;
+  color: #f9fafb;
+  box-shadow: none;
+  border: 1px solid #1e293b;
+}
+
+.dashboard.dark .dashboard-header {
+  background-color: #1f2937;
+  color: #f9fafb;
+  box-shadow: none;
+}
+
+.dashboard.dark h1,
+.dashboard.dark h2,
+.dashboard.dark p,
+.dashboard.dark li,
+.dashboard.dark td,
+.dashboard.dark th,
+.dashboard.dark span,
+.dashboard.dark strong,
+.dashboard.dark pre {
+  color: #f9fafb !important;
+}
+
+.dashboard.dark .refresh-btn {
+  background: #2d3748;
+  color: #ffffff;
+}
+
+.dashboard.dark .refresh-btn:hover {
+  background: #1d4ed8;
+}
+
+.dashboard.dark .status {
+  color: #22c55e;
+}
+
+.dashboard.dark footer {
+  background-color: #161b22;
+  border-top: 1px solid #30363d;
+  box-shadow: none;
+}
+
+.dashboard.dark footer a {
+  color: #3b82f6;
+}
+
+/* ===== Global Background Fix ===== */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0d1117;
+}
+
+pre {
+  color: inherit;
+  font-family: monospace;
+}

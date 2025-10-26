@@ -1,0 +1,169 @@
+{
+  "source_adapter_output": {
+    "series": [
+      [
+        "2025-10-25 21:54",
+        3
+      ],
+      [
+        "2025-10-25 21:55",
+        2
+      ],
+      [
+        "2025-10-25 21:56",
+        1
+      ],
+      [
+        "2025-10-25 21:57",
+        2
+      ]
+    ],
+    "exemplars": [
+      {
+        "@timestamp": "2025-10-25T21:54:30.123Z",
+        "@message": "[ERROR] Timeout connecting to payment service",
+        "level": "ERROR"
+      },
+      {
+        "@timestamp": "2025-10-25T21:54:31.456Z",
+        "@message": "Traceback (most recent call last):\n  File \"/var/task/payment_handler.py\", line 45, in process_payment\n    response = payment_client.charge(amount)\n  File \"/var/task/lib/payment_client.py\", line 88, in charge\n    return self._make_request(payload)\nTimeoutError: Request timed out after 5000ms",
+        "level": "ERROR"
+      },
+      {
+        "@timestamp": "2025-10-25T21:54:45.789Z",
+        "@message": "[ERROR] Payment processing failed: Connection reset by peer",
+        "level": "ERROR"
+      },
+      {
+        "@timestamp": "2025-10-25T21:55:12.345Z",
+        "@message": "java.sql.SQLException: Cannot get a connection, pool error Timeout waiting for idle object\n\tat com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:186)\n\tat com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:145)\n\tat com.checkout.db.DatabaseManager.getConnection(DatabaseManager.java:67)\n\tat com.checkout.service.OrderService.createOrder(OrderService.java:123)",
+        "level": "ERROR"
+      },
+      {
+        "@timestamp": "2025-10-25T21:56:15.234Z",
+        "@message": "ERROR: Database connection failed\n    at /app/src/database/connection.js:45:12\n    at /app/src/services/order-service.js:78:23\n    at /app/src/controllers/checkout-controller.js:156:18\nError: connect ETIMEDOUT 10.0.1.25:5432",
+        "level": "ERROR"
+      },
+      {
+        "@timestamp": "2025-10-25T21:57:02.890Z",
+        "@message": "Exception in thread \"pool-2-thread-15\" java.lang.RuntimeException: Payment gateway unreachable\n\tat com.checkout.payment.PaymentGateway.processPayment(PaymentGateway.java:234)\n\tat com.checkout.service.PaymentService.handlePayment(PaymentService.java:89)\n\tat java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)",
+        "level": "ERROR"
+      },
+      {
+        "@timestamp": "2025-10-25T21:57:30.123Z",
+        "@message": "[ERROR] Max retries exceeded for payment processing",
+        "level": "ERROR"
+      }
+    ],
+    "file_hits": {
+      "/var/task/lib/payment_client.py": 1,
+      "/var/task/payment_handler.py": 1,
+      "DatabaseManager.java": 1,
+      "OrderService.java": 1,
+      "HikariPool.java": 1,
+      "/app/src/database/connection.js": 1,
+      "/app/src/controllers/checkout-controller.js": 1,
+      "/app/src/services/order-service.js": 1,
+      "PaymentGateway.java": 1,
+      "PaymentService.java": 1,
+      "ThreadPoolExecutor.java": 1
+    },
+    "deploy": {
+      "sha": "a1b2c3d",
+      "message": "Reduce payment timeout from 30s to 5s for faster failover",
+      "timestamp": "2025-10-25T21:45:00Z",
+      "changed_files": [
+        "src/payment_handler.py",
+        "lib/payment_client.py",
+        "config/timeout.json",
+        "src/services/order-service.js",
+        "com/checkout/payment/PaymentGateway.java"
+      ]
+    }
+  },
+  "error_analyzer_output": {
+    "status": "success",
+    "basic_stats": {
+      "total_errors": 8,
+      "total_error_points": 4,
+      "unique_exemplars": 7,
+      "affected_files": 11,
+      "deploy_sha": "a1b2c3d",
+      "deploy_message": "Reduce payment timeout from 30s to 5s for faster failover"
+    },
+    "dashboard_ready": {
+      "error_timeline": [
+        [
+          "2025-10-25 21:54",
+          3
+        ],
+        [
+          "2025-10-25 21:55",
+          2
+        ],
+        [
+          "2025-10-25 21:56",
+          1
+        ],
+        [
+          "2025-10-25 21:57",
+          2
+        ]
+      ],
+      "top_errors": [
+        {
+          "@timestamp": "2025-10-25T21:54:30.123Z",
+          "@message": "[ERROR] Timeout connecting to payment service",
+          "level": "ERROR"
+        },
+        {
+          "@timestamp": "2025-10-25T21:54:31.456Z",
+          "@message": "Traceback (most recent call last):\n  File \"/var/task/payment_handler.py\", line 45, in process_payment\n    response = payment_client.charge(amount)\n  File \"/var/task/lib/payment_client.py\", line 88, in charge\n    return self._make_request(payload)\nTimeoutError: Request timed out after 5000ms",
+          "level": "ERROR"
+        },
+        {
+          "@timestamp": "2025-10-25T21:54:45.789Z",
+          "@message": "[ERROR] Payment processing failed: Connection reset by peer",
+          "level": "ERROR"
+        },
+        {
+          "@timestamp": "2025-10-25T21:55:12.345Z",
+          "@message": "java.sql.SQLException: Cannot get a connection, pool error Timeout waiting for idle object\n\tat com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:186)\n\tat com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:145)\n\tat com.checkout.db.DatabaseManager.getConnection(DatabaseManager.java:67)\n\tat com.checkout.service.OrderService.createOrder(OrderService.java:123)",
+          "level": "ERROR"
+        },
+        {
+          "@timestamp": "2025-10-25T21:56:15.234Z",
+          "@message": "ERROR: Database connection failed\n    at /app/src/database/connection.js:45:12\n    at /app/src/services/order-service.js:78:23\n    at /app/src/controllers/checkout-controller.js:156:18\nError: connect ETIMEDOUT 10.0.1.25:5432",
+          "level": "ERROR"
+        }
+      ],
+      "file_impact": {
+        "/var/task/lib/payment_client.py": 1,
+        "/var/task/payment_handler.py": 1,
+        "DatabaseManager.java": 1,
+        "OrderService.java": 1,
+        "HikariPool.java": 1,
+        "/app/src/database/connection.js": 1,
+        "/app/src/controllers/checkout-controller.js": 1,
+        "/app/src/services/order-service.js": 1,
+        "PaymentGateway.java": 1,
+        "PaymentService.java": 1,
+        "ThreadPoolExecutor.java": 1
+      },
+      "deployment_info": {
+        "sha": "a1b2c3d",
+        "message": "Reduce payment timeout from 30s to 5s for faster failover",
+        "timestamp": "2025-10-25T21:45:00Z",
+        "changed_files": [
+          "src/payment_handler.py",
+          "lib/payment_client.py",
+          "config/timeout.json",
+          "src/services/order-service.js",
+          "com/checkout/payment/PaymentGateway.java"
+        ]
+      }
+    }
+  },
+  "pipeline_status": "success",
+  "timestamp": "2025-10-25T17:35:00Z"
+}
