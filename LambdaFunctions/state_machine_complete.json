@@ -1,0 +1,68 @@
+{
+  "Comment": "DevAngel Complete Pipeline with GitHub Integration",
+  "StartAt": "SourceAdapter",
+  "States": {
+    "SourceAdapter": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:478047815638:function:SourceAdapter",
+      "ResultPath": "$.source_adapter_output",
+      "Next": "ErrorAnalyzer"
+    },
+    "ErrorAnalyzer": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:478047815638:function:ErrorAnalyzer",
+      "ResultPath": "$.error_analyzer_output",
+      "Next": "ParallelProcessing"
+    },
+    "ParallelProcessing": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "FastDashboardUpdate",
+          "States": {
+            "FastDashboardUpdate": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:478047815638:function:FastUpdater",
+              "Comment": "Quick dashboard update with basic error stats",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "DetailedAnalysis",
+          "States": {
+            "DetailedAnalysis": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:478047815638:function:ErrorSummarizer",
+              "ResultPath": "$.error_summarizer_output",
+              "Next": "CheckCriticalErrors"
+            },
+            "CheckCriticalErrors": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.error_summarizer_output.requires_immediate_action",
+                  "BooleanEquals": true,
+                  "Next": "CreateGitHubIssue"
+                }
+              ],
+              "Default": "EnhancedDashboardUpdate"
+            },
+            "CreateGitHubIssue": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:478047815638:function:CreateIssueForQ",
+              "ResultPath": "$.github_issue_output",
+              "Next": "EnhancedDashboardUpdate"
+            },
+            "EnhancedDashboardUpdate": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:478047815638:function:EnhancedUpdater",
+              "End": true
+            }
+          }
+        }
+      ],
+      "End": true
+    }
+  }
+}

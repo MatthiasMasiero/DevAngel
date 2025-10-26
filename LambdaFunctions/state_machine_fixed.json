@@ -1,0 +1,35 @@
+{
+  "Comment": "DevAngel Pipeline - Fixed",
+  "StartAt": "SourceAdapter",
+  "States": {
+    "SourceAdapter": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:478047815638:function:SourceAdapter",
+      "Next": "ErrorAnalyzer"
+    },
+    "ErrorAnalyzer": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:478047815638:function:ErrorAnalyzer",
+      "Next": "CheckCriticalErrors"
+    },
+    "CheckCriticalErrors": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.error_analyzer_output.needs_immediate_attention",
+          "BooleanEquals": true,
+          "Next": "CreateGitHubIssue"
+        }
+      ],
+      "Default": "End"
+    },
+    "CreateGitHubIssue": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:478047815638:function:CreateIssueForQ",
+      "End": true
+    },
+    "End": {
+      "Type": "Succeed"
+    }
+  }
+}

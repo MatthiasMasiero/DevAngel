@@ -1,0 +1,49 @@
+{
+  "Comment": "DevAngel Pipeline with Progressive Updates",
+  "StartAt": "SourceAdapter",
+  "States": {
+    "SourceAdapter": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:478047815638:function:SourceAdapter",
+      "Next": "ErrorAnalyzer"
+    },
+    "ErrorAnalyzer": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:478047815638:function:ErrorAnalyzer",
+      "InputPath": "$.source_adapter_output",
+      "ResultPath": "$.error_analyzer_output",
+      "Next": "ParallelProcessing"
+    },
+    "ParallelProcessing": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "FastUpdate",
+          "States": {
+            "FastUpdate": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:478047815638:function:FastUpdater",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "SlowUpdate",
+          "States": {
+            "SlowUpdate": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:478047815638:function:ErrorSummarizer",
+              "Next": "EnhancedUpdate"
+            },
+            "EnhancedUpdate": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:us-east-1:478047815638:function:EnhancedUpdater",
+              "End": true
+            }
+          }
+        }
+      ],
+      "End": true
+    }
+  }
+}

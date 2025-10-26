@@ -1,0 +1,105 @@
+{
+  "logEvents": [
+    {
+      "timestamp": 1698345600000,
+      "message": "2023-10-26T12:00:00.000Z INFO [RequestId: abc123] Lambda function started successfully",
+      "logLevel": "INFO",
+      "requestId": "abc123",
+      "source": "lambda"
+    },
+    {
+      "timestamp": 1698345605000,
+      "message": "2023-10-26T12:00:05.000Z ERROR [RequestId: def456] DynamoDB operation failed: The provided key element does not match the schema",
+      "logLevel": "ERROR",
+      "requestId": "def456",
+      "source": "dynamodb",
+      "errorType": "ValidationException"
+    },
+    {
+      "timestamp": 1698345610000,
+      "message": "2023-10-26T12:00:10.000Z INFO [RequestId: ghi789] S3 object uploaded successfully to bucket: devangel-data",
+      "logLevel": "INFO",
+      "requestId": "ghi789",
+      "source": "s3"
+    },
+    {
+      "timestamp": 1698345615000,
+      "message": "2023-10-26T12:00:15.000Z WARN [RequestId: jkl012] API Gateway throttling detected: Rate exceeded",
+      "logLevel": "WARN",
+      "requestId": "jkl012",
+      "source": "apigateway",
+      "errorType": "ThrottlingException"
+    },
+    {
+      "timestamp": 1698345620000,
+      "message": "2023-10-26T12:00:20.000Z ERROR [RequestId: mno345] Lambda timeout: Task timed out after 30.00 seconds",
+      "logLevel": "ERROR",
+      "requestId": "mno345",
+      "source": "lambda",
+      "errorType": "TimeoutError"
+    },
+    {
+      "timestamp": 1698345625000,
+      "message": "2023-10-26T12:00:25.000Z INFO [RequestId: pqr678] CloudWatch metric published successfully",
+      "logLevel": "INFO",
+      "requestId": "pqr678",
+      "source": "cloudwatch"
+    },
+    {
+      "timestamp": 1698345630000,
+      "message": "2023-10-26T12:00:30.000Z ERROR [RequestId: stu901] RDS connection failed: Could not connect to database instance",
+      "logLevel": "ERROR",
+      "requestId": "stu901",
+      "source": "rds",
+      "errorType": "ConnectionError"
+    },
+    {
+      "timestamp": 1698345635000,
+      "message": "2023-10-26T12:00:35.000Z INFO [RequestId: vwx234] SNS message sent successfully to topic: DevAngelAlerts",
+      "logLevel": "INFO",
+      "requestId": "vwx234",
+      "source": "sns"
+    },
+    {
+      "timestamp": 1698345640000,
+      "message": "2023-10-26T12:00:40.000Z ERROR [RequestId: yza567] IAM permission denied: User is not authorized to perform action",
+      "logLevel": "ERROR",
+      "requestId": "yza567",
+      "source": "iam",
+      "errorType": "AccessDenied"
+    },
+    {
+      "timestamp": 1698345645000,
+      "message": "2023-10-26T12:00:45.000Z INFO [RequestId: bcd890] Step Function execution completed successfully",
+      "logLevel": "INFO",
+      "requestId": "bcd890",
+      "source": "stepfunctions"
+    },
+    {
+      "timestamp": 1698345650000,
+      "message": "2023-10-26T12:00:50.000Z ERROR [RequestId: efg123] EC2 instance health check failed: Instance i-1234567890abcdef0 is unreachable",
+      "logLevel": "ERROR",
+      "requestId": "efg123",
+      "source": "ec2",
+      "errorType": "InstanceUnreachable"
+    },
+    {
+      "timestamp": 1698345655000,
+      "message": "2023-10-26T12:00:55.000Z INFO [RequestId: hij456] ELB health check passed for target group",
+      "logLevel": "INFO",
+      "requestId": "hij456",
+      "source": "elb"
+    },
+    {
+      "timestamp": 1698345660000,
+      "message": "2023-10-26T12:01:00.000Z ERROR [RequestId: klm789] SQS message processing failed: Message visibility timeout exceeded",
+      "logLevel": "ERROR",
+      "requestId": "klm789",
+      "source": "sqs",
+      "errorType": "VisibilityTimeoutExceeded"
+    }
+  ],
+  "logGroupName": "/aws/lambda/devangel-functions",
+  "logStreamName": "2023/10/26/[$LATEST]abcdef123456",
+  "nextToken": "f/12345678901234567890123456789012345678901234567890123456"
+}
