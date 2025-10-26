@@ -1,0 +1,206 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "QuietOpsCloudWatchStack": {
+        "id": "QuietOpsCloudWatchStack",
+        "path": "QuietOpsCloudWatchStack",
+        "children": {
+          "TargetLogGroup": {
+            "id": "TargetLogGroup",
+            "path": "QuietOpsCloudWatchStack/TargetLogGroup",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "2.87.0"
+            }
+          },
+          "ErrorMetricFilter": {
+            "id": "ErrorMetricFilter",
+            "path": "QuietOpsCloudWatchStack/ErrorMetricFilter",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuietOpsCloudWatchStack/ErrorMetricFilter/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::MetricFilter",
+                  "aws:cdk:cloudformation:props": {
+                    "filterPattern": "?\"ERROR\" ?\"Exception\" ?\"Traceback\"",
+                    "logGroupName": "/aws/lambda/checkout-api",
+                    "metricTransformations": [
+                      {
+                        "metricNamespace": "QuietOps",
+                        "metricName": "ErrorsPerMinute",
+                        "metricValue": "1",
+                        "defaultValue": 0
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnMetricFilter",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.MetricFilter",
+              "version": "2.87.0"
+            }
+          },
+          "ErrorSpike": {
+            "id": "ErrorSpike",
+            "path": "QuietOpsCloudWatchStack/ErrorSpike",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuietOpsCloudWatchStack/ErrorSpike/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "alarmName": "QuietOps-ErrorSpike",
+                    "metricName": "ErrorsPerMinute",
+                    "namespace": "QuietOps",
+                    "period": 60,
+                    "statistic": "Sum",
+                    "threshold": 1,
+                    "treatMissingData": "notBreaching"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "2.87.0"
+            }
+          },
+          "AlarmStateChangeRule": {
+            "id": "AlarmStateChangeRule",
+            "path": "QuietOpsCloudWatchStack/AlarmStateChangeRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "QuietOpsCloudWatchStack/AlarmStateChangeRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "source": [
+                        "aws.cloudwatch"
+                      ],
+                      "detail-type": [
+                        "CloudWatch Alarm State Change"
+                      ],
+                      "detail": {
+                        "state": {
+                          "value": [
+                            "ALARM"
+                          ]
+                        },
+                        "alarmName": [
+                          {
+                            "Ref": "ErrorSpikeC341737A"
+                          }
+                        ]
+                      }
+                    },
+                    "state": "ENABLED"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "2.87.0"
+            }
+          },
+          "AlarmName": {
+            "id": "AlarmName",
+            "path": "QuietOpsCloudWatchStack/AlarmName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.87.0"
+            }
+          },
+          "RuleArn": {
+            "id": "RuleArn",
+            "path": "QuietOpsCloudWatchStack/RuleArn",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.87.0"
+            }
+          },
+          "LogGroupName": {
+            "id": "LogGroupName",
+            "path": "QuietOpsCloudWatchStack/LogGroupName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "2.87.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "QuietOpsCloudWatchStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "QuietOpsCloudWatchStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.87.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "QuietOpsCloudWatchStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.87.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "QuietOpsCloudWatchStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.87.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.87.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.87.0"
+    }
+  }
+}

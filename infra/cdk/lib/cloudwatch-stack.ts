@@ -120,9 +120,9 @@ export class QuietOpsCloudWatchStack extends cdk.Stack {
       description: 'ARN of the EventBridge rule that forwards alarm events',
     });
 
-    new cdk.CfnOutput(this, 'MetricFilterName', {
-      value: metricFilter.metricFilterName,
-      description: 'Name of the metric filter that counts errors',
+    new cdk.CfnOutput(this, 'LogGroupName', {
+      value: logGroupName,
+      description: 'Log group being monitored for errors',
     });
   }
 }

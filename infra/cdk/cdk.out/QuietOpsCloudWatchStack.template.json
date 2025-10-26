@@ -1,0 +1,132 @@
+{
+ "Resources": {
+  "ErrorMetricFilter77F7AAD4": {
+   "Type": "AWS::Logs::MetricFilter",
+   "Properties": {
+    "FilterPattern": "?\"ERROR\" ?\"Exception\" ?\"Traceback\"",
+    "LogGroupName": "/aws/lambda/checkout-api",
+    "MetricTransformations": [
+     {
+      "DefaultValue": 0,
+      "MetricName": "ErrorsPerMinute",
+      "MetricNamespace": "QuietOps",
+      "MetricValue": "1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuietOpsCloudWatchStack/ErrorMetricFilter/Resource"
+   }
+  },
+  "ErrorSpikeC341737A": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "AlarmName": "QuietOps-ErrorSpike",
+    "MetricName": "ErrorsPerMinute",
+    "Namespace": "QuietOps",
+    "Period": 60,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuietOpsCloudWatchStack/ErrorSpike/Resource"
+   }
+  },
+  "AlarmStateChangeRuleACC5D21F": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "source": [
+      "aws.cloudwatch"
+     ],
+     "detail-type": [
+      "CloudWatch Alarm State Change"
+     ],
+     "detail": {
+      "state": {
+       "value": [
+        "ALARM"
+       ]
+      },
+      "alarmName": [
+       {
+        "Ref": "ErrorSpikeC341737A"
+       }
+      ]
+     }
+    },
+    "State": "ENABLED"
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuietOpsCloudWatchStack/AlarmStateChangeRule/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02NwQrCMBBEv6X3dC1FUI8ieJNC/QCJ6app00Sym+YQ8u+S6sHTvHkMTAv7HTSVjFSrYaqNvkO6slST6JFc8AqFjHRLxj0J0gXZa3XWhtGL08P+9yyUcWGIktUL0tFIP5fJClnggpYJUh8MFl0y50Jd4Hfg1f0es7BuQBhps7RbOEBTjaR17YNlPSP03/wATUMDT7oAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "QuietOpsCloudWatchStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "AlarmName": {
+   "Description": "Name of the CloudWatch alarm that detects error spikes",
+   "Value": {
+    "Ref": "ErrorSpikeC341737A"
+   }
+  },
+  "RuleArn": {
+   "Description": "ARN of the EventBridge rule that forwards alarm events",
+   "Value": {
+    "Fn::GetAtt": [
+     "AlarmStateChangeRuleACC5D21F",
+     "Arn"
+    ]
+   }
+  },
+  "LogGroupName": {
+   "Description": "Log group being monitored for errors",
+   "Value": "/aws/lambda/checkout-api"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
